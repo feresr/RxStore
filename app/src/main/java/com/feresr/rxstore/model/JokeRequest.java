@@ -6,14 +6,13 @@ package com.feresr.rxstore.model;
 
 public class JokeRequest {
 
-    public boolean shouldFetchNewOne() {
-        return fetchANewOne;
+    public void setConsumed(boolean consumed) {
+        this.consumed = consumed;
     }
 
-    public boolean fetchANewOne = false;
+    private boolean consumed = false;
 
-    public JokeRequest(boolean newOne) {
-        super();
-        this.fetchANewOne = newOne;
+    public boolean wasConsumed() {
+        return consumed;
     }
 }

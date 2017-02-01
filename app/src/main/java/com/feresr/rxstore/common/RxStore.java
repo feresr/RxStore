@@ -11,7 +11,7 @@ import rx.subjects.PublishSubject;
  * Base store class
  */
 public abstract class RxStore<Input, Output> {
-    private PublishSubject<Input> subject = PublishSubject.create();
+    private BehaviorSubject<Input> subject = BehaviorSubject.create();
 
     public final Subscription register(Subscriber<Output> subscriber) {
         return subject.compose(getTransformer()).subscribe(subscriber);

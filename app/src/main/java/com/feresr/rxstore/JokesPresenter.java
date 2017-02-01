@@ -12,28 +12,26 @@ import rx.Subscription;
 /**
  * Created by feresr on 1/2/17.
  */
-
 public class JokesPresenter extends BasePresenter<JokesView> {
 
     private JokesStore store;
     private Subscription subscription;
 
     @Inject
-    public JokesPresenter(JokesStore jokesStore) {
+    JokesPresenter(JokesStore jokesStore) {
         this.store = jokesStore;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        fetchNewJoke();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         subscription = store.register(new JokeSubscriber());
-        store.onNext(new JokeRequest(false));
-
     }
 
     @Override
@@ -42,13 +40,8 @@ public class JokesPresenter extends BasePresenter<JokesView> {
         super.onStop();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    public void fetchNewJoke() {
-        store.onNext(new JokeRequest(true));
+    void fetchNewJoke() {
+        store.onNext(new JokeRequest());
     }
 
     private class JokeSubscriber extends Subscriber<JokeResponse> {

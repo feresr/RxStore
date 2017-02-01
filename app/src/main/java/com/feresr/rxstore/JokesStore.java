@@ -40,11 +40,16 @@ public class JokesStore extends RxStore<JokeRequest, JokeResponse> {
                         .flatMap(new Func1<JokeRequest, Observable<JokeResponse>>() {
                             @Override
                             public Observable<JokeResponse> call(final JokeRequest jokeRequest) {
-                                if (jokeRequest.shouldFetchNewOne()) {
+
+                                if (!jokeRequest.wasConsumed()) {
+                                    jokeRequest.setConsumed(true);
                                     return network();
                                 } else {
+                                    jokeRequest.setConsumed(true);
                                     return Observable.concat(memory(), network()).first();
                                 }
+
+
                             }
                         }).observeOn(AndroidSchedulers.mainThread());
             }
