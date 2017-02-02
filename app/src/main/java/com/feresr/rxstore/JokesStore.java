@@ -20,6 +20,7 @@ import rx.schedulers.Schedulers;
 
 /**
  * Created by feresr on 1/2/17.
+ * JokesStore
  */
 public class JokesStore extends RxStore<JokeRequest, JokeResponse> {
 
@@ -28,7 +29,7 @@ public class JokesStore extends RxStore<JokeRequest, JokeResponse> {
     private JokeResponse lastResponse;
 
     @Inject
-    public JokesStore(JokesEndpoint endpoints) {
+    private JokesStore(JokesEndpoint endpoints) {
         this.endpoints = endpoints;
     }
 
@@ -44,9 +45,11 @@ public class JokesStore extends RxStore<JokeRequest, JokeResponse> {
                             public Observable<JokeResponse> call(final JokeRequest jokeRequest) {
 
                                 if (!jokeRequest.wasConsumed()) {
+                                    Log.d(TAG, "Retrieving from network... " + jokeRequest);
                                     jokeRequest.setConsumed(true);
                                     return network();
                                 } else {
+                                    Log.d(TAG, "Retrieving from memory... " + jokeRequest);
                                     jokeRequest.setConsumed(true);
                                     return Observable.concat(memory(), network()).first();
                                 }
@@ -66,26 +69,31 @@ public class JokesStore extends RxStore<JokeRequest, JokeResponse> {
                     @Override
                     public JokeResponse call(Response<Joke> response) {
                         JokeResponse jokeResponse = new JokeResponse();
-                        Log.d(TAG, "A network request was executed");
                         if (response.isSuccessful()) {
+                            Log.d(TAG, "Network request executed successfully");
                             jokeResponse.setJoke(response.body());
                         } else {
+                            Log.d(TAG, "Network error");
                             jokeResponse.setError(response.message());
                         }
 
                         return jokeResponse;
                     }
-                }).onErrorReturn(new Func1<Throwable, JokeResponse>() {
+                })
+                .doOnNext(new Action1<JokeResponse>() {
+                    @Override
+                    public void call(JokeResponse jokeResponse) {
+                        Log.d(TAG, "Caching to memory");
+                        lastResponse = jokeResponse;
+                    }
+                })
+                .onErrorReturn(new Func1<Throwable, JokeResponse>() {
                     @Override
                     public JokeResponse call(Throwable throwable) {
+                        Log.d(TAG, "A network error has been caught");
                         JokeResponse jokeResponse = new JokeResponse();
                         jokeResponse.setError(throwable.getMessage());
                         return jokeResponse;
-                    }
-                }).doOnNext(new Action1<JokeResponse>() {
-                    @Override
-                    public void call(JokeResponse jokeResponse) {
-                        lastResponse = jokeResponse;
                     }
                 });
     }

@@ -13,6 +13,7 @@ import rx.Subscription;
 
 /**
  * Created by feresr on 1/2/17.
+ * JokesPresenter
  */
 public class JokesPresenter extends BasePresenter<JokesView> {
 
@@ -51,7 +52,7 @@ public class JokesPresenter extends BasePresenter<JokesView> {
         @Override
         public void onError(Throwable e) {
             //should never happen!
-            Log.e(TAG, "error()");
+            Log.e(TAG, "error()", e);
         }
 
         @Override
