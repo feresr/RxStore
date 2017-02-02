@@ -29,7 +29,7 @@ public class JokesStore extends RxStore<JokeRequest, JokeResponse> {
     private JokeResponse lastResponse;
 
     @Inject
-    private JokesStore(JokesEndpoint endpoints) {
+    public JokesStore(JokesEndpoint endpoints) {
         this.endpoints = endpoints;
     }
 
