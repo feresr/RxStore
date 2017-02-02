@@ -1,5 +1,7 @@
 package com.feresr.rxstore;
 
+import android.util.Log;
+
 import com.feresr.rxstore.common.BasePresenter;
 import com.feresr.rxstore.model.JokeRequest;
 import com.feresr.rxstore.model.JokeResponse;
@@ -14,18 +16,13 @@ import rx.Subscription;
  */
 public class JokesPresenter extends BasePresenter<JokesView> {
 
+    private final static String TAG = JokesPresenter.class.getSimpleName();
     private JokesStore store;
     private Subscription subscription;
 
     @Inject
     JokesPresenter(JokesStore jokesStore) {
         this.store = jokesStore;
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        fetchNewJoke();
     }
 
     @Override
@@ -48,11 +45,13 @@ public class JokesPresenter extends BasePresenter<JokesView> {
         @Override
         public void onCompleted() {
             //should never happen!
+            Log.e(TAG, "completed()");
         }
 
         @Override
         public void onError(Throwable e) {
             //should never happen!
+            Log.e(TAG, "error()");
         }
 
         @Override

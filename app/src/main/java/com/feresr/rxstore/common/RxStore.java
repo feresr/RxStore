@@ -4,7 +4,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.subjects.BehaviorSubject;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by feresr on 26/1/17.
@@ -12,9 +11,14 @@ import rx.subjects.PublishSubject;
  */
 public abstract class RxStore<Input, Output> {
     private BehaviorSubject<Input> subject = BehaviorSubject.create();
+    private Observable<Output> observable;
 
     public final Subscription register(Subscriber<Output> subscriber) {
-        return subject.compose(getTransformer()).subscribe(subscriber);
+        if (observable == null) {
+            observable = subject.compose(getTransformer());
+        }
+
+        return observable.subscribe(subscriber);
     }
 
     public final void unregister(Subscription subscription) {

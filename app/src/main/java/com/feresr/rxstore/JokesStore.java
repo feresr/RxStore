@@ -7,6 +7,8 @@ import com.feresr.rxstore.model.Joke;
 import com.feresr.rxstore.model.JokeRequest;
 import com.feresr.rxstore.model.JokeResponse;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import retrofit2.Response;
@@ -21,9 +23,9 @@ import rx.schedulers.Schedulers;
  */
 public class JokesStore extends RxStore<JokeRequest, JokeResponse> {
 
+    private static final String TAG = JokesStore.class.getSimpleName();
     private JokesEndpoint endpoints;
     private JokeResponse lastResponse;
-    private static final String TAG = JokesStore.class.getSimpleName();
 
     @Inject
     public JokesStore(JokesEndpoint endpoints) {
@@ -59,6 +61,7 @@ public class JokesStore extends RxStore<JokeRequest, JokeResponse> {
 
     private Observable<JokeResponse> network() {
         return endpoints.getRandomJoke()
+                .delay(2, TimeUnit.SECONDS) // "simulate network delay"
                 .map(new Func1<Response<Joke>, JokeResponse>() {
                     @Override
                     public JokeResponse call(Response<Joke> response) {
