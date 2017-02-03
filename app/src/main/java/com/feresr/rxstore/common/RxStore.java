@@ -1,39 +1,44 @@
 package com.feresr.rxstore.common;
 
-import android.util.Log;
+import com.jakewharton.rxrelay.BehaviorRelay;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.subjects.BehaviorSubject;
 
 /**
  * Created by feresr on 26/1/17.
  * Base store class
  */
 public abstract class RxStore<Input, Output> {
-    private BehaviorSubject<Input> subject = BehaviorSubject.create();
-    private Observable<Output> observable;
-    private final static String TAG = RxStore.class.getSimpleName();
+    private BehaviorRelay<Output> relay;
 
     public final Subscription register(Subscriber<Output> subscriber) {
-        if (observable == null) {
-            observable = subject.compose(getTransformer());
+        if (relay == null) {
+            relay = BehaviorRelay.create(defaultValue());
         }
-        Log.d(TAG, ".subscribe(s)");
-        return observable.subscribe(subscriber);
+        return relay.subscribe(subscriber);
     }
 
     public final void unregister(Subscription subscription) {
         if (subscription != null && !subscription.isUnsubscribed()) {
-            Log.d(TAG, ".unsubscribe()");
             subscription.unsubscribe();
         }
     }
 
-    protected abstract Observable.Transformer<Input, Output> getTransformer();
-
-    public final void onNext(Input event) {
-        subject.onNext(event);
+    public void execute(Input event) {
+        buildObservable(event).subscribe(relay);
     }
+
+    /**
+     * @return the first or default value emitted to subscribers
+     */
+    protected Output defaultValue() {
+        return null;
+    }
+
+    /**
+     * @return an buildObservable responsible of handling its own errors.
+     */
+    protected abstract Observable<Output> buildObservable(Input event);
 }

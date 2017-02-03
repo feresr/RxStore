@@ -39,7 +39,7 @@ public class JokesPresenter extends BasePresenter<JokesView> {
     }
 
     void fetchNewJoke() {
-        store.onNext(new JokeRequest());
+        store.execute(new JokeRequest());
     }
 
     private class JokeSubscriber extends Subscriber<JokeResponse> {
