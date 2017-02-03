@@ -33,9 +33,11 @@ public class JokesStore extends RxStore<JokeRequest, JokeResponse> {
         this.endpoints = endpoints;
     }
 
-    private Observable<JokeResponse> network() {
+    @Override
+    protected Observable<JokeResponse> buildObservable(JokeRequest event) {
         return endpoints.getRandomJoke()
-                .delay(2, TimeUnit.SECONDS) // "simulate network delay"
+                .subscribeOn(Schedulers.io())
+                .delay(2, TimeUnit.SECONDS) // simulate network delay to test screen rotation
                 .map(new Func1<Response<Joke>, JokeResponse>() {
                     @Override
                     public JokeResponse call(Response<Joke> response) {
@@ -59,20 +61,6 @@ public class JokesStore extends RxStore<JokeRequest, JokeResponse> {
                         jokeResponse.setError(throwable.getMessage());
                         return jokeResponse;
                     }
-                });
-    }
-
-    @Override
-    protected Observable<JokeResponse> buildObservable(JokeRequest event) {
-        return Observable.just(event).onBackpressureDrop()
-                .observeOn(Schedulers.io())
-                .flatMap(new Func1<JokeRequest, Observable<JokeResponse>>() {
-                    @Override
-                    public Observable<JokeResponse> call(final JokeRequest jokeRequest) {
-                        Log.d(TAG, "Retrieving from network... " + jokeRequest);
-                        return network();
-
-                    }
                 }).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -84,7 +72,7 @@ public class JokesStore extends RxStore<JokeRequest, JokeResponse> {
 
         jokeResponse.setJoke(joke);
         joke.setValue(value);
-        value.setJoke("Chuck Norris orders you to tap 'New joke'");
+        value.setJoke("Tap 'New joke'");
 
         return jokeResponse;
     }
