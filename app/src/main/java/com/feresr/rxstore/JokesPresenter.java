@@ -5,6 +5,7 @@ import android.util.Log;
 import com.feresr.rxstore.common.BasePresenter;
 import com.feresr.rxstore.model.JokeRequest;
 import com.feresr.rxstore.model.JokeResponse;
+import com.feresr.rxstore.store.JokesStore;
 
 import javax.inject.Inject;
 

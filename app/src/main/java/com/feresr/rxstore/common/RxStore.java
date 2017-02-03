@@ -11,12 +11,9 @@ import rx.Subscription;
  * Base store class
  */
 public abstract class RxStore<Input, Output> {
-    private BehaviorRelay<Output> relay;
+    private BehaviorRelay<Output> relay = BehaviorRelay.create(defaultValue());
 
     public final Subscription register(Subscriber<Output> subscriber) {
-        if (relay == null) {
-            relay = BehaviorRelay.create(defaultValue());
-        }
         return relay.subscribe(subscriber);
     }
 
@@ -26,7 +23,7 @@ public abstract class RxStore<Input, Output> {
         }
     }
 
-    public void execute(Input event) {
+    public final void execute(Input event) {
         buildObservable(event).subscribe(relay);
     }
 

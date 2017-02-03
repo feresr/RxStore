@@ -1,7 +1,8 @@
-package com.feresr.rxstore;
+package com.feresr.rxstore.store;
 
 import android.util.Log;
 
+import com.feresr.rxstore.JokesEndpoint;
 import com.feresr.rxstore.common.RxStore;
 import com.feresr.rxstore.model.Joke;
 import com.feresr.rxstore.model.JokeRequest;
