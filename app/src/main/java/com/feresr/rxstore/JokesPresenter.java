@@ -1,7 +1,5 @@
 package com.feresr.rxstore;
 
-import android.util.Log;
-
 import com.feresr.rxstore.common.BasePresenter;
 import com.feresr.rxstore.model.JokeRequest;
 import com.feresr.rxstore.model.JokeResponse;
@@ -9,16 +7,15 @@ import com.feresr.rxstore.store.JokesStore;
 
 import javax.inject.Inject;
 
-import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action1;
 
 /**
  * Created by feresr on 1/2/17.
  * JokesPresenter
  */
-public class JokesPresenter extends BasePresenter<JokesView> {
+public class JokesPresenter extends BasePresenter<JokesView> implements Action1<JokeResponse> {
 
-    private final static String TAG = JokesPresenter.class.getSimpleName();
     private JokesStore store;
     private Subscription subscription;
 
@@ -30,7 +27,7 @@ public class JokesPresenter extends BasePresenter<JokesView> {
     @Override
     public void onStart() {
         super.onStart();
-        subscription = store.register(new JokeSubscriber());
+        subscription = store.register(this);
     }
 
     @Override
@@ -43,26 +40,12 @@ public class JokesPresenter extends BasePresenter<JokesView> {
         store.execute(new JokeRequest());
     }
 
-    private class JokeSubscriber extends Subscriber<JokeResponse> {
-        @Override
-        public void onCompleted() {
-            //should never happen!
-            Log.e(TAG, "completed()");
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            //should never happen!
-            Log.e(TAG, "error()", e);
-        }
-
-        @Override
-        public void onNext(JokeResponse jokeResponse) {
-            if (jokeResponse.isSuccessful()) {
-                view.displayJoke(jokeResponse.getJoke().getValue().getJoke());
-            } else {
-                view.displayError(jokeResponse.getErrorString());
-            }
+    @Override
+    public void call(JokeResponse jokeResponse) {
+        if (jokeResponse.isSuccessful()) {
+            view.displayJoke(jokeResponse.getJoke().getValue().getJoke());
+        } else {
+            view.displayError(jokeResponse.getErrorString());
         }
     }
 }

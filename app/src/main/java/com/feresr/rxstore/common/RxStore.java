@@ -3,8 +3,8 @@ package com.feresr.rxstore.common;
 import com.jakewharton.rxrelay.BehaviorRelay;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action1;
 
 /**
  * Created by feresr on 26/1/17.
@@ -13,7 +13,7 @@ import rx.Subscription;
 public abstract class RxStore<Input, Output> {
     private BehaviorRelay<Output> relay = BehaviorRelay.create(defaultValue());
 
-    public final Subscription register(Subscriber<Output> subscriber) {
+    public final Subscription register(Action1<Output> subscriber) {
         return relay.subscribe(subscriber);
     }
 

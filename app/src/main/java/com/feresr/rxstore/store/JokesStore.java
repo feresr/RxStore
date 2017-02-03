@@ -47,7 +47,7 @@ public class JokesStore extends RxStore<JokeRequest, JokeResponse> {
                             jokeResponse.setJoke(response.body());
                         } else {
                             Log.d(TAG, "Network error");
-                            jokeResponse.setError(response.message());
+                            jokeResponse.setError("Network error: " + response.message() + " " + response.code());
                         }
 
                         return jokeResponse;
